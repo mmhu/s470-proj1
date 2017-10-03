@@ -1,0 +1,24 @@
+---
+title: "S470 Small Project 1"
+author: "Miriam Hu, Syaza Senin, Eungkoo Kahng, Youngihn Kwon"
+date: "October 1, 2017"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+  opts_chunk$set(cache = TRUE)
+library(tidyverse)
+```
+
+```{r cop}
+methane <- read.csv("COP_CH4_Obs_Mod_Bg_Sep2012-Aug2013.csv")
+spring.months <- c("3", "4", "5")
+spring <- methane %>% filter(Mn %in% spring.months)
+summer.months <- c("6", "7", "8")
+summer <- methane %>% filter(Mn %in% summer.months)
+fall.months <- c("9", "10", "11")
+fall <- methane %>% filter(Mn %in% fall.months)
+winter.months <- c("12", "1", "2")
+winter <- methane %>% filter(Mn %in% winter.months)
+```

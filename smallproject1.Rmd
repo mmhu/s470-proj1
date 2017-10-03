@@ -11,14 +11,18 @@ library(knitr)
 library(tidyverse)
 ```
 
-```{r cop}
+
+## Question 1 (i)
+
+```{r q1i}
 methane <- read.csv("COP_CH4_Obs_Mod_Bg_Sep2012-Aug2013.csv")
+afternoon <- c("16", "17", "18", "19", "20", "21")
 spring.months <- c("3", "4", "5")
-spring <- methane %>% filter(Mn %in% spring.months)
+spring <- methane %>% filter(Mn %in% spring.months & Hr %in% afternoon)
 summer.months <- c("6", "7", "8")
-summer <- methane %>% filter(Mn %in% summer.months)
+summer <- methane %>% filter(Mn %in% summer.months & Hr %in% afternoon)
 fall.months <- c("9", "10", "11")
-fall <- methane %>% filter(Mn %in% fall.months)
+fall <- methane %>% filter(Mn %in% fall.months & Hr %in% afternoon)
 winter.months <- c("12", "1", "2")
-winter <- methane %>% filter(Mn %in% winter.months)
+winter <- methane %>% filter(Mn %in% winter.months & Hr %in% afternoon)
 ```

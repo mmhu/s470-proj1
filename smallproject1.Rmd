@@ -3,16 +3,17 @@ title: "Project 1"
 author: "Miriam Hu, Syaza Senin, Eungkoo (Eugene) Kahng, Youngihn Kwon"
 date: "October 6, 2017"
 output:
-  html_document: default
+  pdf_document: default
 ---
 
 
 ```{r, include=FALSE}
 library(knitr)
+library(plyr)
 library(tidyverse)
-opts_chunk$set(echo=FALSE,
-               cache=TRUE, autodep=TRUE,
-               message=FALSE, warning=FALSE)
+opts_chunk$set(echo = FALSE,
+               cache = TRUE, autodep = TRUE,
+               message = FALSE, warning = FALSE)
 ```
 
 
@@ -35,12 +36,12 @@ winter <- methane %>% filter(Mn %in% winter.months & Hr %in% afternoon)
 
 # For part i)
 season.dat <- rbind(spring, summer, fall, winter)
-Season <- c(rep("spring",nrow(spring)), rep("summer",nrow(summer)),
-            rep("fall",nrow(fall)), rep("winter",nrow(winter)))
+Season <- c(rep("spring", nrow(spring)), rep("summer", nrow(summer)),
+            rep("fall", nrow(fall)), rep("winter", nrow(winter)))
 season.noon <- cbind(Season, season.dat)
 
 # For part ii)
-methane$Date <- as.Date(with(methane, paste(Yr, Mn, Dy, sep="-")), "%Y-%m-%d")
+methane$Date <- as.Date(with(methane, paste(Yr, Mn, Dy, sep = "-")), "%Y-%m-%d")
 CH4.ave <- ddply(methane, .(Date), summarize, daily.ave = mean(Obs))
 ```
 
@@ -60,6 +61,6 @@ ggplot(methane, aes(Date, CH4.ave[2])) + geom_line() + ylab("Daily CH4 Average")
 ## Question 2
 
 ```{r model-fitting, fig.align="center"}
-methane.bu.sp <- read.csv("BU C2H6 CH4 5min May-Jun2014.csv")
-methane.bu.fa <- read.csv("BU C2H6 CH4 5min Oct2012-Jan2013.csv")
+methane.bu.sp <- read.csv("BU_C2H6_CH4_5min_May-Jun2014.csv")
+methane.bu.fa <- read.csv("BU_C2H6_CH4_5min_Oct2012-Jan2013.csv")
 ```

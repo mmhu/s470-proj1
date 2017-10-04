@@ -60,9 +60,24 @@ From the density plot generated above, it is apparent that afternoon CH4 concent
 ##ii)
 
 ```{r time-series, fig.align="center"}
-# I don't know what it meant by "fit a trend component"
-ggplot(methane, aes(Date, CH4.ave[2])) + geom_line() + ylab("Daily CH4 Average") +
+
+ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_line() + ylab("Daily CH4 Average") + 
   ggtitle("Daily CH4 Average")
+
+#working for the fitting the component
+CH4.ave$Date.n = 1:365
+CH4.ave.lm = loess(daily.ave ~ Date.n, data = CH4.ave)
+CH4.ave.lm.df = augment(CH4.ave.lm)
+Date.M = CH4.ave.lm.df$Date.n
+resid= CH4.ave.lm.df$.resid
+CH4.ave.lo =loess(resid ~ Date.M, span=0.3)
+CH4.ave.lo.df =augment(CH4.ave.lo)
+
+#ggplot(CH4.ave.lo.df, aes(sample = .resid)) +stat_qq()
+
+#Trend=CH4.ave.lm.df$.fitted-mean(CH4.ave.lm.df$.fitted)
+#g1=ggplot(CH4.ave.lm.df,aes(x=Date.n, y=Trend)) +geom_point() +geom_abline(slope=0, intercept=0)+labs(title="Fitted trend")+ylim(-2,2)
+#print(g1)
 ```
 
 

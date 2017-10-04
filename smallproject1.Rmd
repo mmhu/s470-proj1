@@ -45,11 +45,19 @@ methane$Date <- as.Date(with(methane, paste(Yr, Mn, Dy, sep = "-")), "%Y-%m-%d")
 CH4.ave <- ddply(methane, .(Date), summarize, daily.ave = mean(Obs))
 ```
 
+
+##i) 
+
 ```{r density-plot, fig.align="center"}
 ggplot(season.noon, aes(x = Obs, colour = Season)) + geom_density() + 
   ggtitle("CH4 Observations Distribution by Season") + 
   xlab("CH4 Observations") + ylab("Probability")
 ```
+
+From the density plot generated above, it is apparent that afternoon CH4 concentration during spring seaseon seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild stage from the given scale). The fall and summer seasons show relatively the same density plot, meaning that the average mesaured atmoshpehre methane concetrations in both seasons are about the same. Lastly, in winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration which ranges above 1950 ppb is more easily detectable.
+
+
+##ii)
 
 ```{r time-series, fig.align="center"}
 # I don't know what it meant by "fit a trend component"

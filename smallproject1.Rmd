@@ -61,8 +61,7 @@ From the density plot generated above, it is apparent that afternoon CH4 concent
 ggplot(season.noon, aes(x = Season, y = Obs)) + geom_boxplot(aes(fill = Season))
 ```
 
-**interprettttt
-
+From the boxplots created above, it seems like fall and summer show similar widths of methane concentration level (ppb). As shown in density plot above, winter boxplot clearly demonstrates the higher ppb range. Plus, we are able to see all four seasons certainly include outliers, which definitely affects our qq-plots and residual plots as well. When it comes to normality, all the seasons but winter show a much less-skewness (as the medians are centered).
 
 ### ii)
 
@@ -129,7 +128,9 @@ grid.arrange(resid.sp, resid.fa, qqplot.sp, qqplot.fa, ncol = 2)
 ```
 
 
-First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.    
+First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.   
+
+Basically, both qqplots clearly do not seem to have be normal distibution of residuals especially at the first tail. However, as shown above, this is due to the great amount of outliers in both dataset. Thus. it is actually normal to have non-normality in both cases, meaning that the weird looking plots are actually okay as they are expected.
 
 
 ```{r resid-fit, fit.align="center"}

@@ -3,7 +3,6 @@ title: "Project 1"
 author: "Miriam Hu, Syaza Senin, Eungkoo (Eugene) Kahng, Youngihn Kwon"
 date: "October 6, 2017"
 output:
-  html_document: default
   pdf_document: default
 ---
 
@@ -43,6 +42,7 @@ season.noon <- cbind(Season, season.dat)
 
 # For part ii)
 methane$Date <- as.Date(with(methane, paste(Yr, Mn, Dy, sep = "-")), "%Y-%m-%d")
+methane$Obs[is.na(methane$Obs)] <- mean(methane$Obs, na.rm=TRUE) # impute mean
 CH4.ave <- ddply(methane, .(Date), summarize, daily.ave = mean(Obs))
 ```
 

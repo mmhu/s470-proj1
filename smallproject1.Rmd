@@ -57,15 +57,18 @@ ggplot(season.noon, aes(x = Obs, colour = Season)) + geom_density() +
 
 From the density plot generated above, it is apparent that afternoon CH4 concentration during spring seaseon seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild stage from the given scale). The fall and summer seasons show relatively the same density plot, meaning that the average mesaured atmoshpehre methane concetrations in both seasons are about the same. Lastly, in winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration which ranges above 1950 ppb is more easily detectable.
 
+```{r boxplot, fig.align="center"}
+ggplot(season.noon, aes(x = Season, y = Obs)) + geom_boxplot(aes(fill = Season))
+```
+
+**interprettttt
+
 
 ### ii)
 
 ```{r time-series, fig.align="center"}
-ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_line() + 
+ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_line() + geom_smooth(span = 0.4) + 
   ylab("Daily CH4 Average") + ggtitle("Daily CH4 Average")
-
-ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_smooth() + 
-  ylab("Daily CH4 Average")
 
 CH4.ave$Date.n <- 1:365
 CH4.ave.lm <- lm(daily.ave ~ Date.n, data = CH4.ave)
@@ -79,20 +82,18 @@ CH4.lo.df <- augment(CH4.lo)
 #Fitted trend
 Trend <- CH4.ave.lm.df$.fitted - mean(CH4.ave.lm.df$.fitted)
 g1 <- ggplot(CH4.ave.lm.df, aes(x = date.n, y = Trend)) + geom_point() + 
-  geom_abline(slope = 0, intercept = 0) + labs(title = "Fitted trend", x = "Days") + 
-  ylim(-2,2)
+  geom_abline(slope = 0, intercept = 0) + labs(title = "Fitted trend", x = "Days") 
 
 #Oscillations
 g2 <- ggplot(CH4.lo.df, aes(x = date.n, y = .fitted)) + geom_point() + 
   geom_abline(slope = 0, intercept = 0) + labs(title = "Oscillations", x = "Days") + 
-  geom_line() + ylim(-2,2)
+  geom_line() 
 
 #Residuals after fitting loess to oscillations
 g3 <- ggplot(CH4.lo.df, aes(x = date.n, y = .resid)) + geom_point() + 
-  geom_line() + geom_abline(slope = 0) + labs(title = "Residuals", x = "Days") + 
-  ylim(-2,2)
+  geom_line() + geom_abline(slope = 0) + labs(title = "Residuals", x = "Days")
 
-grid.arrange(g1, g2, g3, ncol = 3)
+grid.arrange(g1, g2, g3, ncol = 1)
 ```
 
 
@@ -128,7 +129,8 @@ grid.arrange(resid.sp, resid.fa, qqplot.sp, qqplot.fa, ncol = 2)
 ```
 
 
-First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data. 
+First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.    
+
 
 ```{r resid-fit, fit.align="center"}
 # Residual vs fit graph for spring model

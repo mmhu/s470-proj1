@@ -3,6 +3,7 @@ title: "Project 1"
 author: "Miriam Hu, Syaza Senin, Eungkoo (Eugene) Kahng, Youngihn Kwon"
 date: "October 6, 2017"
 output:
+  html_document: default
   pdf_document: default
 ---
 
@@ -55,7 +56,7 @@ ggplot(season.noon, aes(x = Obs, colour = Season)) + geom_density() +
   xlab("CH4 Observations") + ylab("Probability")
 ```
 
-From the density plot generated above, it is apparent that afternoon CH4 concentration during spring seaseon seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild stage from the given scale). The fall and summer seasons show relatively the same density plot, meaning that the average mesaured atmoshpehre methane concetrations in both seasons are about the same. Lastly, in winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration which ranges above 1950 ppb is more easily detectable.
+From the density plot generated above, it is apparent that afternoon CH4 concentration during spring season seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild stage from the given scale). The fall and summer seasons show relatively the same density plot, meaning that the average measured atmosphere methane concetrations in both seasons are about the same. Lastly, in winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration which ranges above 1950 ppb is more easily detectable.
 
 ```{r boxplot, fig.align="center"}
 ggplot(season.noon, aes(x = Season, y = Obs)) + geom_boxplot(aes(fill = Season))
@@ -72,6 +73,9 @@ ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_line() + geom_smoot
 CH4.ave$Date.n <- 1:365
 CH4.ave.lm <- lm(daily.ave ~ Date.n, data = CH4.ave)
 CH4.ave.lm.df <- augment(CH4.ave.lm)
+
+ggplot(CH4.ave.lm.df, aes(Date.n, .resid)) + geom_point() + geom_smooth() +
+  geom_abline(slope = 0, intercept = 0)
 
 date.n <- CH4.ave.lm.df$Date.n
 resid <- CH4.ave.lm.df$.resid
@@ -95,8 +99,9 @@ g3 <- ggplot(CH4.lo.df, aes(x = date.n, y = .resid)) + geom_point() +
 grid.arrange(g1, g2, g3, ncol = 1)
 ```
 
-From the time series plot for daily CH4 observation at COP above, daily CH4 describes highest pattern during winter (December, January and February) than other three seasons. During summer season (June, July and August), daily CH4 shows lowest pattern.
-The trend component was used to describe deeply to interpret time series data. Interpreting the oscillations plot, it is hard to observe any strong pattern or obvious oscillations because there is only one oscillation in whole graph which make hard to figure out the cycle. So, we can conclude that there is not quite strong trend components beside the time series plot.   
+From the time series plot for daily CH4 observation at COP above, daily CH4 describes highest pattern during winter (December, January and February) than other three seasons. During summer season (June, July and August), daily CH4 shows lowest pattern. From the residual plot of the loess trend fit, the oscillations are contained in the residuals since they are not fitted by the trend curve.
+
+The trend component was used to describe deeply to interpret time series data. Interpreting the oscillations plot, it is hard to observe any strong pattern or obvious oscillations because there is only one oscillation in whole graph which make hard to figure out the cycle. So, we can conclude that there is not quite strong trend components beside the time series plot. The residuals also show random pattern.  
 
 ## Question 2
 
@@ -132,7 +137,7 @@ grid.arrange(resid.sp, resid.fa, qqplot.sp, qqplot.fa, ncol = 2)
 
 First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.   
 
-Basically, both qqplots clearly do not seem to have be normal distibution of residuals especially at the first tail. However, as shown above, this is due to the great amount of outliers in both dataset. Thus. it is actually normal to have non-normality in both cases, meaning that the weird looking plots are actually okay as they are expected.
+Basically, both qqplots clearly do not seem to have be normal distibution of residuals especially at the first tail. However, as shown above, this is due to the great amount of outliers in both dataset. Thus, it is actually normal to have non-normality in both cases, meaning that the weird looking plots are actually okay as they are expected.
 
 
 ```{r resid-fit, fit.align="center"}

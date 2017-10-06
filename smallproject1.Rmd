@@ -95,6 +95,8 @@ g3 <- ggplot(CH4.lo.df, aes(x = date.n, y = .resid)) + geom_point() +
 grid.arrange(g1, g2, g3, ncol = 1)
 ```
 
+From the time series plot for daily CH4 observation at COP above, daily CH4 describes highest pattern during winter (December, January and February) than other three seasons. During summer season (June, July and August), daily CH4 shows lowest pattern.
+The trend component was used to describe deeply to interpret time series data. Interpreting the oscillations plot, it is hard to observe any strong pattern or obvious oscillations because there is only one oscillation in whole graph which make hard to figure out the cycle. So, we can conclude that there is not quite strong trend components beside the time series plot.   
 
 ## Question 2
 

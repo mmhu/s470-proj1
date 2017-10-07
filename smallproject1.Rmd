@@ -23,7 +23,7 @@ opts_chunk$set(echo = FALSE,
 
 ```{r data-loading, include=FALSE}
 methane <- read.csv("COP_CH4_Obs_Mod_Bg_Sep2012-Aug2013.csv")
-
+methane$Obs[is.na(methane$Obs)] <- mean(methane$Obs, na.rm=TRUE) # impute mean
 afternoon <- c("16", "17", "18", "19", "20", "21")
 spring.months <- c("3", "4", "5")
 spring <- methane %>% filter(Mn %in% spring.months & Hr %in% afternoon)
@@ -42,8 +42,7 @@ season.noon <- cbind(Season, season.dat)
 
 # For part ii)
 methane$Date <- as.Date(with(methane, paste(Yr, Mn, Dy, sep = "-")), "%Y-%m-%d")
-methane$Obs[is.na(methane$Obs)] <- mean(methane$Obs, na.rm=TRUE) # impute mean
-CH4.ave <- ddply(methane, .(Date), summarize, daily.ave = mean(Obs))
+CH4.avg <- ddply(methane, .(Date), summarize, daily.avg = mean(Obs))
 ```
 
 
@@ -55,46 +54,38 @@ ggplot(season.noon, aes(x = Obs, colour = Season)) + geom_density() +
   xlab("CH4 Observations") + ylab("Probability")
 ```
 
-From the density plot generated above, it is apparent that afternoon CH4 concentration during spring seaseon seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild stage from the given scale). The fall and summer seasons show relatively the same density plot, meaning that the average mesaured atmoshpehre methane concetrations in both seasons are about the same. Lastly, in winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration which ranges above 1950 ppb is more easily detectable.
+From the density plot generated above, it is apparent that afternoon CH4 concentration during spring season seems to present the highest peak of concentration from the range of 1900 ppb to 1970 ppb (relatively mild values from the given scale). The fall and summer seasons show approximately the same density plot, meaning that the average measured atmosphere methane concentration is about the same for both seasons. Lastly, in the winter season, the concentration is generally weaker throughout the season compared to others; however, the high concentration, which ranges above 1950 ppb, is more easily detectable.
 
 ```{r boxplot, fig.align="center"}
 ggplot(season.noon, aes(x = Season, y = Obs)) + geom_boxplot(aes(fill = Season))
 ```
 
-From the boxplots created above, it seems like fall and summer show similar widths of methane concentration level (ppb). As shown in density plot above, winter boxplot clearly demonstrates the higher ppb range. Plus, we are able to see all four seasons certainly include outliers, which definitely affects our qq-plots and residual plots as well. When it comes to normality, all the seasons but winter show a much less-skewness (as the medians are centered).
+From the boxplots created above, it seems like fall, spring, and summer show similar median and IQR of methane concentration level (ppb), especially when compared to winter. The winter boxplot clearly demonstrates that winter has a higher ppb range, which supports what we saw in the density plot above.
+
+Additionally, we are able to see that all four seasons certainly include outliers, which definitely affects our qqplots and residual plots as well. When it comes to normality, all the seasons but winter show much less skewness (as the medians are centered).
 
 ### ii)
 
 ```{r time-series, fig.align="center"}
-ggplot(CH4.ave, aes(Date, CH4.ave[2])) + geom_point() + geom_line() + geom_smooth(span = 0.4) + 
-  ylab("Daily CH4 Average") + ggtitle("Daily CH4 Average")
-
-CH4.ave$Date.n <- 1:365
-CH4.ave.lm <- lm(daily.ave ~ Date.n, data = CH4.ave)
-CH4.ave.lm.df <- augment(CH4.ave.lm)
-
-date.n <- CH4.ave.lm.df$Date.n
-resid <- CH4.ave.lm.df$.resid
-CH4.lo <- loess(resid ~ date.n, span = 0.3)
-CH4.lo.df <- augment(CH4.lo)
-
-#Fitted trend
-Trend <- CH4.ave.lm.df$.fitted - mean(CH4.ave.lm.df$.fitted)
-g1 <- ggplot(CH4.ave.lm.df, aes(x = date.n, y = Trend)) + geom_point() + 
-  geom_abline(slope = 0, intercept = 0) + labs(title = "Fitted trend", x = "Days") 
-
-#Oscillations
-g2 <- ggplot(CH4.lo.df, aes(x = date.n, y = .fitted)) + geom_point() + 
-  geom_abline(slope = 0, intercept = 0) + labs(title = "Oscillations", x = "Days") + 
-  geom_line() 
-
-#Residuals after fitting loess to oscillations
-g3 <- ggplot(CH4.lo.df, aes(x = date.n, y = .resid)) + geom_point() + 
-  geom_line() + geom_abline(slope = 0) + labs(title = "Residuals", x = "Days")
-
-grid.arrange(g1, g2, g3, ncol = 1)
+ggplot(CH4.avg, aes(Date, CH4.avg[2])) + geom_point() + geom_line() + geom_smooth(span = 0.4) + ylab("Daily CH4 Average") + ggtitle("Daily CH4 Average")
 ```
 
+This plot shows a loess curve fit to the daily average methane, the trend component. Methane values show a clear seasonal oscillation. Higher values are in the fall and winter, with a peak in January 2013 at about 1960 ppb. Lower values in the spring and summer, with a low in June 2013 at about 1920 ppb. The period appears to be about nine months.
+
+```{r time-oscillation, fig.align="center"}
+CH4.avg$Date.n <- 1:365
+CH4.avg.lo <- loess(daily.avg ~ Date.n, data = CH4.avg)
+CH4.avg.lo.df <- augment(CH4.avg.lo)
+
+date.n <- CH4.avg.lo.df$Date.n
+resid <- CH4.avg.lo.df$.resid
+CH4.lo <- loess(resid ~ date.n, span = 0.4)
+CH4.lo.df <- augment(CH4.lo)
+
+ggplot(CH4.lo.df, aes(date.n, resid)) + geom_point() + geom_line() + geom_smooth(span = 0.4) + ylab("Residuals") + ggtitle("Residuals")
+```
+
+This plot is for a loess curve fit to the residuals. You can tell by the mostly flat line that the oscillation has been accounted for by the first component, so it is not very useful to fit an additional oscillatory component. The large residuals near Day 1 are most likely due to the initial extremely high CH4 measurement. The trend component is probably sufficient, and we do not observe other strong time components.
 
 ## Question 2
 
@@ -127,18 +118,16 @@ qqplot.fa <- ggplot(fa.win.lm.df, aes(sample = .resid)) + stat_qq() +
 grid.arrange(resid.sp, resid.fa, qqplot.sp, qqplot.fa, ncol = 2)
 ```
 
+First, we did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900 to 2200 ppb, and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 to above 3000 ppb. This is a big difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.
 
-First of all, We did the residual plots for both spring and fall-winter linear models. In the spring model, it seems that lots of residual plots are clustered around the CH4 level from 1900~2200 ppb and that as the concentration level increases, the residuals points started plunging. On the other hand, in fall-winter model, the points are distributed pretty evenly from the CH4 concentration level from 1900 ~ above 3000 ppb. This is a huge difference when compared to the previous case. The residuals are not deviating much from the 0 throughout the data.   
+Both qqplots clearly do not seem to have be normal distibution of residuals, especially at the first tail. However, as shown above, this is due to the great number of outliers in both dataset. Thus, it actually makes sense to have non-normality in both cases, meaning that we expected the plots to look a little weird.
 
-Basically, both qqplots clearly do not seem to have be normal distibution of residuals especially at the first tail. However, as shown above, this is due to the great amount of outliers in both dataset. Thus. it is actually normal to have non-normality in both cases, meaning that the weird looking plots are actually okay as they are expected.
-
-
-```{r resid-fit, fit.align="center"}
+```{r resid-fit, fit.align = "center"}
 # Residual vs fit graph for spring model
-spring.fitted <- sort(fitted.values(spring.model))-mean(fitted.values(spring.model))
+spring.fitted <- sort(fitted.values(spring.model)) - mean(fitted.values(spring.model))
 spring.residuals <- sort(residuals(spring.model))
 n1 <- length(spring.residuals)
-f.value1 <- (0.5:(n1 -0.5)) / n1
+f.value1 <- (0.5:(n1 - 0.5)) / n1
 spring.fit <- data.frame(f.value1, Fitted = spring.fitted, 
                          Residuals = spring.residuals)
 spring.fit.long <- spring.fit %>% gather(type, value, Fitted:Residuals)
@@ -149,7 +138,7 @@ res.fit.sp <- ggplot(spring.fit.long, aes(x = f.value1, y = value)) + geom_point
 fall.winter.fitted <- sort(fitted.values(fall.winter.model)) -mean(fitted.values(fall.winter.model))
 fall.winter.residuals <- sort(residuals(fall.winter.model))
 n2 <- length(fall.winter.residuals)
-f.value2 <- (0.5:(n2 -0.5)) / n2
+f.value2 <- (0.5:(n2 - 0.5)) / n2
 fall.winter.fit <- data.frame(f.value2, Fitted = fall.winter.fitted, 
                               Residuals = fall.winter.residuals)
 fall.winter.fit.long <- fall.winter.fit %>% gather(type, value, Fitted:Residuals)
@@ -159,4 +148,8 @@ res.fit.fa <- ggplot(fall.winter.fit.long, aes(x = f.value2, y =value)) +
 grid.arrange(res.fit.sp, res.fit.fa, ncol = 2)
 ```
 
-In the comparison of spring vs fall-winter linear models, we cannot tell much about the difference between the two graphs. The only thing that is noticeable is that the fall-spring model has more connected plot pattern, meaning there is less jump. This can be explained by the fact that fall has a lot more data points. Other than that, we see a resonalby close range (width) of variability that can be explained by each model. Thus, we can select a method of running a summary of each model and compare the r-squared values to see which case explains the variation better by the model. After running the sumamries, we find that the Fall-Winter season model explains the variation by 93% whereas the spring model explains the variation by about 72%. Therefore, as the two visual plots (residual plot and residual vs fitted) support the Fall-Winter model can be a better indicator/model of representing the CH4 and C2H6 relationship than the spring model.
+In the comparison of spring vs. fall-winter linear models, we cannot tell much about the difference between the two graphs. The only thing that is noticeable is that the fall-spring model has more a connected plot pattern, meaning there is less of a jump from outlier to outlier in the fitted points. This can be explained by the fact that fall has a lot more data points. Other than that, we see that the spread of the fitted values is slightly larger than the spread of the residuals, ignoring the outlier tails. Both models seem to capture a decent amount of variation in C2H6 observations.
+
+Thus, we can select a method of running a summary of each model and compare the r-squared values to see which case explains the variation better. After running the summaries, we find that the fall-winter season model explains the variation by 93 percent, whereas the spring model explains the variation by about 72 percent.
+
+Therefore, the two visual plots (residual plot and residual vs. fitted) support the idea that the fall-winter model is a better indicator/model of representing the CH4 and C2H6 relationship than the spring model.

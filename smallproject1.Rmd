@@ -85,7 +85,7 @@ CH4.lo.df <- augment(CH4.lo)
 ggplot(CH4.lo.df, aes(date.n, resid)) + geom_point() + geom_line() + geom_smooth(span = 0.4) + ylab("Residuals") + ggtitle("Residuals")
 ```
 
-This plot is for a loess curve fit to the residuals. You can tell by the mostly flat line that the oscillation has been accounted for by the first component, so it is not very useful to fit an additional oscillatory component. The large residuals near Day 1 are most likely due to the initial extremely high CH4 measurement. The trend component is probably sufficient, and we do not observe other strong time components.
+This plot is for a loess curve fit to the residuals. You can tell by the mostly flat line that the oscillation has been accounted for by the first component, so it is not very useful to fit an additional component. The large residuals near Day 1 are most likely due to the initial extremely high CH4 measurement. The trend component is probably sufficient, and we do not observe other strong time components.
 
 ## Question 2
 
